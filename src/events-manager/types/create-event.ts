@@ -1,6 +1,6 @@
 import { EvnetType } from '@prisma/client';
 
-export interface CreateEvent {
+export interface Event {
   priority: number;
   name: string;
   description: string;

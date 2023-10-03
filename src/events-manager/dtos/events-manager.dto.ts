@@ -9,7 +9,7 @@ import {
 import { CustomRangeValidator } from '../validators/priority-validator';
 import { EventTypeValidator } from '../validators/event-type-validator';
 
-export class CreateEventDto {
+export class EventDto {
   @IsNotEmpty()
   @IsNumber()
   @Validate(CustomRangeValidator, [1, 10])
