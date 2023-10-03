@@ -17,10 +17,10 @@ model Events7 {
   description         String
   created_at          DateTime @default(now())
   updated_at          DateTime @default(now())
-  type                EvnetType
+  type                Evnet7Types
 }
 
-enum EvnetType {
+enum Evnet7Types {
   CROSPROMO
   LIVEOPS
   APP
