@@ -1,1 +1,1 @@
-# events7-server
+# Events7-server
