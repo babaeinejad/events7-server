@@ -9,7 +9,7 @@ import {
   Get,
   Ip,
 } from '@nestjs/common';
-import { EventsManagerService } from './EventsManagerService';
+import { EventsManagerService } from './events-manager.service';
 import { EventDto } from './dtos/events-manager.dto';
 
 @Controller('events')

@@ -1,4 +1,3 @@
-import { EvnetType } from '@prisma/client';
 import {
   IsNotEmpty,
   IsNumber,
@@ -8,6 +7,7 @@ import {
 } from 'class-validator';
 import { CustomRangeValidator } from '../validators/priority-validator';
 import { EventTypeValidator } from '../validators/event-type-validator';
+import { Evnet7Types } from '../types/events';
 
 export class EventDto {
   @IsNotEmpty()
@@ -24,7 +24,7 @@ export class EventDto {
   description: string;
 
   @IsNotEmpty()
-  @IsEnum(EvnetType)
+  @IsEnum(Evnet7Types)
   @Validate(EventTypeValidator)
-  type: EvnetType;
+  type: Evnet7Types;
 }

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { EventsManagerController } from './events-manager.controller';
-import { EventsManagerService } from './EventsManagerService';
+import { EventsManagerService } from './events-manager.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { HttpModule } from '@nestjs/axios';
 

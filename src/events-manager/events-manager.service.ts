@@ -64,7 +64,7 @@ export class EventsManagerService {
   async getAvailableEventTypes(ip: string) {
     const isLocalhost = ip === '127.0.0.1' || ip === '::1';
     if (isLocalhost) {
-      return Evnet7Types;
+      return ExtendedEvnet7Types;
     }
 
     const { countryCode } = await this.getCountryCode(ip);
