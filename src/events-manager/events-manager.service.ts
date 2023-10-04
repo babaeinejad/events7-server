@@ -22,6 +22,8 @@ export class EventsManagerService {
   ) {}
 
   async getCountryCode(ip: string): Promise<IpAPI> {
+    //TODO remove logger
+    this.logger.log('ip is: ', ip);
     const { data } = await firstValueFrom(
       this.httpService.get<IpAPI>(`http://ip-api.com/json/${ip}`).pipe(
         catchError((error: AxiosError) => {
@@ -37,7 +39,6 @@ export class EventsManagerService {
     const url =
       'https://us-central1-o7tools.cloudfunctions.net/fun7-ad-partner';
     const params = { countryCode };
-
     const username = 'fun7user';
     const password = 'fun7pass';
 
