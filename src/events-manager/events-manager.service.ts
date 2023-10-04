@@ -92,7 +92,7 @@ export class EventsManagerService {
       },
     });
     if (!event) {
-      throw new NotFoundException();
+      throw new NotFoundException("The event doesn't exist");
     }
     return event;
   }
@@ -104,7 +104,10 @@ export class EventsManagerService {
         AdsPermissionEnum[adsPermission.ads] ===
         AdsPermissionEnum['you shall not pass!']
       ) {
-        throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+        throw new HttpException(
+          AdsPermissionEnum['you shall not pass!'],
+          HttpStatus.FORBIDDEN,
+        );
       }
     }
   }
@@ -121,7 +124,10 @@ export class EventsManagerService {
     await this.validateEvent(event, ip);
     await this.getEvent(id);
     const updatedEvent = await this.prismaService.events7.update({
-      data: event,
+      data: {
+        ...event,
+        updated_at: Date(),
+      },
       where: {
         id,
       },
