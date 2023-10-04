@@ -8,7 +8,7 @@ import {
 import {
   AdsPermission,
   AdsPermissionEnum,
-  Event,
+  Events7,
   Evnet7Types,
   ExtendedEvnet7Types,
   IpAPI,
@@ -97,7 +97,7 @@ export class EventsManagerService {
     return event;
   }
 
-  async validateEvent(event: Event, ip: string) {
+  async validateEvent(event: Events7, ip: string) {
     if (ExtendedEvnet7Types[event.type] === ExtendedEvnet7Types.APP) {
       const adsPermission = await this.checkAdsPermision(ip);
       if (
@@ -109,7 +109,7 @@ export class EventsManagerService {
     }
   }
 
-  async createEvent(event: Event, ip: string) {
+  async createEvent(event: Events7, ip: string) {
     await this.validateEvent(event, ip);
     const createdEvent = await this.prismaService.events7.create({
       data: event,
@@ -117,7 +117,7 @@ export class EventsManagerService {
     return createdEvent;
   }
 
-  async updateEvent(id: number, event: Event, ip: string) {
+  async updateEvent(id: number, event: Events7, ip: string) {
     await this.validateEvent(event, ip);
     await this.getEvent(id);
     const updatedEvent = await this.prismaService.events7.update({

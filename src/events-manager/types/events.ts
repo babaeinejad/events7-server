@@ -11,11 +11,11 @@ export enum Evnet7Types {
   APP = 'APP',
 }
 
-export interface Event {
+export interface Events7 {
   priority: number;
   name: string;
   description: string;
-  type: Evnet7Types;
+  type: ExtendedEvnet7Types;
 }
 
 export interface IpAPI {
