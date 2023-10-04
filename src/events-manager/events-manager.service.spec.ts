@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EventsManagerService } from './events-manager.service';
 
 describe('EventsManagerService', () => {
+  //Austria: 5.254.80.194
+  //Switzerland: 37.120.213.51
   let service: EventsManagerService;
 
   beforeEach(async () => {
