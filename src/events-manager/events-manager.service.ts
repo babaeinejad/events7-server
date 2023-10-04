@@ -1,4 +1,10 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   AdsPermission,
   AdsPermissionEnum,
@@ -6,11 +12,11 @@ import {
   Evnet7Types,
   ExtendedEvnet7Types,
   IpAPI,
-} from './types/events';
-import { PrismaService } from 'src/prisma/prisma.service';
+} from 'src/events-manager/types/events';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class EventsManagerService {
@@ -91,14 +97,28 @@ export class EventsManagerService {
     return event;
   }
 
-  async createEvent(event: Event) {
+  async validateEvent(event: Event, ip: string) {
+    if (ExtendedEvnet7Types[event.type] === ExtendedEvnet7Types.APP) {
+      const adsPermission = await this.checkAdsPermision(ip);
+      if (
+        AdsPermissionEnum[adsPermission.ads] ===
+        AdsPermissionEnum['you shall not pass!']
+      ) {
+        throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+      }
+    }
+  }
+
+  async createEvent(event: Event, ip: string) {
+    await this.validateEvent(event, ip);
     const createdEvent = await this.prismaService.events7.create({
       data: event,
     });
     return createdEvent;
   }
 
-  async updateEvent(id: number, event: Event) {
+  async updateEvent(id: number, event: Event, ip: string) {
+    await this.validateEvent(event, ip);
     await this.getEvent(id);
     const updatedEvent = await this.prismaService.events7.update({
       data: event,
