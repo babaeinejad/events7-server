@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { EventsManagerService } from './events-manager.service';
 import { EventDto } from './dtos/events-manager.dto';
+import { RealIP } from 'nestjs-real-ip';
 
 @Controller('events')
 export class EventsManagerController {
@@ -21,7 +22,7 @@ export class EventsManagerController {
   }
 
   @Get('/available-event-types')
-  getAvailableEventTypes(@Ip() ip) {
+  getAvailableEventTypes(@RealIP() ip: string) {
     return this.eventsManagerService.getAvailableEventTypes(ip);
   }
 

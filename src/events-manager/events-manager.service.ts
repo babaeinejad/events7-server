@@ -63,6 +63,8 @@ export class EventsManagerService {
   }
 
   async getAvailableEventTypes(ip: string) {
+    //TODO remove logger
+    this.logger.log('ip is: ', ip);
     const isLocalhost = ip === '127.0.0.1' || ip === '::1';
     if (isLocalhost) {
       return ExtendedEvnet7Types;
