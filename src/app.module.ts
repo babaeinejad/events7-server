@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { EventsManagerModule } from './events-manager/events-manager.module';
-import { PrismaModule } from './prisma/prisma.module';
+import { AppController } from 'src/app.controller';
+import { AppService } from 'src/app.service';
+import { EventsManagerModule } from 'src/events-manager/events-manager.module';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
   imports: [EventsManagerModule, PrismaModule],

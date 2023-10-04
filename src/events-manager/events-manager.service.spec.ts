@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EventsManagerService } from './events-manager.service';
+import { EventsManagerService } from 'src/events-manager/events-manager.service';
 
 describe('EventsManagerService', () => {
   //Austria: 5.254.80.194

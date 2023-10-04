@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EventsManagerController } from './events-manager.controller';
+import { EventsManagerController } from 'src/events-manager/events-manager.controller';
 
 describe('EventsController', () => {
   let controller: EventsManagerController;

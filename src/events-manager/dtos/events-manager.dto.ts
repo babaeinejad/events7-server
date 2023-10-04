@@ -5,9 +5,9 @@ import {
   IsString,
   IsEnum,
 } from 'class-validator';
-import { CustomRangeValidator } from '../validators/priority-validator';
-import { EventTypeValidator } from '../validators/event-type-validator';
-import { Evnet7Types } from '../types/events';
+import { CustomRangeValidator } from 'src/events-manager/validators/priority-validator';
+import { EventTypeValidator } from 'src/events-manager/validators/event-type-validator';
+import { ExtendedEvnet7Types } from 'src/events-manager/types/events';
 
 export class EventDto {
   @IsNotEmpty()
@@ -24,7 +24,7 @@ export class EventDto {
   description: string;
 
   @IsNotEmpty()
-  @IsEnum(Evnet7Types)
+  @IsEnum(ExtendedEvnet7Types)
   @Validate(EventTypeValidator)
-  type: Evnet7Types;
+  type: ExtendedEvnet7Types;
 }
