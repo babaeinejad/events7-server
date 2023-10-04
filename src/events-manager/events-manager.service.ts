@@ -22,8 +22,6 @@ export class EventsManagerService {
   ) {}
 
   async getCountryCode(ip: string): Promise<IpAPI> {
-    //TODO remove logger
-    this.logger.log('ip is: ', ip);
     const { data } = await firstValueFrom(
       this.httpService.get<IpAPI>(`http://ip-api.com/json/${ip}`).pipe(
         catchError((error: AxiosError) => {
@@ -63,8 +61,6 @@ export class EventsManagerService {
   }
 
   async getAvailableEventTypes(ip: string) {
-    //TODO remove logger
-    this.logger.log('ip is: ', ip);
     const isLocalhost = ip === '127.0.0.1' || ip === '::1';
     if (isLocalhost) {
       return ExtendedEvnet7Types;
