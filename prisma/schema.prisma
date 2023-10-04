@@ -10,17 +10,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Events {
+model Events7 {
   id                  Int @id @default(autoincrement())
   priority            Int
   name                String 
   description         String
   created_at          DateTime @default(now())
   updated_at          DateTime @default(now())
-  type                EvnetType
+  type                Evnet7Types
 }
 
-enum EvnetType {
+enum Evnet7Types {
   CROSPROMO
   LIVEOPS
   APP
