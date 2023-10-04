@@ -98,11 +98,7 @@ export class EventsManagerService {
   }
 
   async validateEvent(event: Events7, ip: string) {
-    this.logger.log(
-      ExtendedEvnet7Types[event.type],
-      ExtendedEvnet7Types[event.type] === ExtendedEvnet7Types.ADS,
-    );
-    if (ExtendedEvnet7Types[event.type] === ExtendedEvnet7Types.APP) {
+    if (ExtendedEvnet7Types[event.type] === ExtendedEvnet7Types.ADS) {
       const adsPermission = await this.checkAdsPermision(ip);
       if (
         AdsPermissionEnum[adsPermission.ads] ===
