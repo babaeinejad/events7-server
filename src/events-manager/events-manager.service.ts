@@ -1,16 +1,22 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   AdsPermission,
   AdsPermissionEnum,
-  Event,
+  Events7,
   Evnet7Types,
   ExtendedEvnet7Types,
   IpAPI,
-} from './types/events';
-import { PrismaService } from 'src/prisma/prisma.service';
+} from 'src/events-manager/types/events';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class EventsManagerService {
@@ -37,7 +43,6 @@ export class EventsManagerService {
     const url =
       'https://us-central1-o7tools.cloudfunctions.net/fun7-ad-partner';
     const params = { countryCode };
-
     const username = 'fun7user';
     const password = 'fun7pass';
 
@@ -87,22 +92,42 @@ export class EventsManagerService {
       },
     });
     if (!event) {
-      throw new NotFoundException();
+      throw new NotFoundException("The event doesn't exist");
     }
     return event;
   }
 
-  async createEvent(event: Event) {
+  async validateEvent(event: Events7, ip: string) {
+    if (ExtendedEvnet7Types[event.type] === ExtendedEvnet7Types.ADS) {
+      const adsPermission = await this.checkAdsPermision(ip);
+      if (
+        AdsPermissionEnum[adsPermission.ads] ===
+        AdsPermissionEnum['you shall not pass!']
+      ) {
+        throw new HttpException(
+          AdsPermissionEnum['you shall not pass!'],
+          HttpStatus.FORBIDDEN,
+        );
+      }
+    }
+  }
+
+  async createEvent(event: Events7, ip: string) {
+    await this.validateEvent(event, ip);
     const createdEvent = await this.prismaService.events7.create({
       data: event,
     });
     return createdEvent;
   }
 
-  async updateEvent(id: number, event: Event) {
+  async updateEvent(id: number, event: Events7, ip: string) {
+    await this.validateEvent(event, ip);
     await this.getEvent(id);
     const updatedEvent = await this.prismaService.events7.update({
-      data: event,
+      data: {
+        ...event,
+        updated_at: Date(),
+      },
       where: {
         id,
       },

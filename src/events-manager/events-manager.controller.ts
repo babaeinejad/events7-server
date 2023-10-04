@@ -7,10 +7,10 @@ import {
   ParseIntPipe,
   Delete,
   Get,
-  Ip,
 } from '@nestjs/common';
-import { EventsManagerService } from './events-manager.service';
-import { EventDto } from './dtos/events-manager.dto';
+import { EventsManagerService } from 'src/events-manager/events-manager.service';
+import { EventDto } from 'src/events-manager/dtos/events-manager.dto';
+import { RealIP } from 'nestjs-real-ip';
 
 @Controller('events')
 export class EventsManagerController {
@@ -21,7 +21,7 @@ export class EventsManagerController {
   }
 
   @Get('/available-event-types')
-  getAvailableEventTypes(@Ip() ip) {
+  getAvailableEventTypes(@RealIP() ip: string) {
     return this.eventsManagerService.getAvailableEventTypes(ip);
   }
 
@@ -31,14 +31,17 @@ export class EventsManagerController {
   }
 
   @Post()
-  createEvent(@Body() body: EventDto, @Ip() ip) {
-    console.log('ip is: ', ip);
-    return this.eventsManagerService.createEvent(body);
+  createEvent(@Body() body: EventDto, @RealIP() ip: string) {
+    return this.eventsManagerService.createEvent(body, ip);
   }
 
   @Put('/:id')
-  updateEvent(@Param('id', ParseIntPipe) id: number, @Body() body: EventDto) {
-    return this.eventsManagerService.updateEvent(id, body);
+  updateEvent(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: EventDto,
+    @RealIP() ip: string,
+  ) {
+    return this.eventsManagerService.updateEvent(id, body, ip);
   }
 
   @Delete('/:id')
