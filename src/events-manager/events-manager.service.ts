@@ -124,10 +124,7 @@ export class EventsManagerService {
     await this.validateEvent(event, ip);
     await this.getEvent(id);
     const updatedEvent = await this.prismaService.events7.update({
-      data: {
-        ...event,
-        updated_at: Date(),
-      },
+      data: event,
       where: {
         id,
       },
