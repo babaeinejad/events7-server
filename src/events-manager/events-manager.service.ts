@@ -80,8 +80,19 @@ export class EventsManagerService {
       : ExtendedEvnet7Types;
   }
 
-  async getEvents() {
-    const events = await this.prismaService.events7.findMany();
+  async getEvents(id?: number) {
+    const events = await this.prismaService.events7.findMany({
+      take: 200,
+      skip: 1,
+      ...(id && {
+        cursor: {
+          id,
+        },
+      }),
+      orderBy: {
+        id: 'asc',
+      },
+    });
     return events;
   }
 
