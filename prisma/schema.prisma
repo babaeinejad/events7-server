@@ -15,8 +15,6 @@ model Events7 {
   priority            Int
   name                String 
   description         String
-  created_at          DateTime @default(now())
-  updated_at          DateTime @default(now())
   type                Evnet7Types
 }
 
