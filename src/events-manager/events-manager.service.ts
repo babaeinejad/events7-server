@@ -17,38 +17,45 @@ import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ConfigService } from '@nestjs/config';
+import { generalError } from './const';
 
 @Injectable()
 export class EventsManagerService {
   private readonly logger = new Logger(EventsManagerService.name);
+  baseIpApiUrl = this.configService.get<string>('IP_API_BASE_URL');
+  adPermissionUrl = this.configService.get<string>('AD_PERMISSION_URL');
 
   constructor(
     private readonly prismaService: PrismaService,
     private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
   ) {}
 
   async getCountryCode(ip: string): Promise<IpAPI> {
     const { data } = await firstValueFrom(
-      this.httpService.get<IpAPI>(`http://ip-api.com/json/${ip}`).pipe(
+      this.httpService.get<IpAPI>(this.baseIpApiUrl + ip).pipe(
         catchError((error: AxiosError) => {
           this.logger.error(error.response.data);
-          throw 'An error happened!';
+          throw generalError;
         }),
       ),
     );
-    return data;
+    if (data && data.countryCode) {
+      return data;
+    } else {
+      throw generalError;
+    }
   }
 
   async checkAdsPermision(countryCode: string): Promise<AdsPermission> {
-    const url =
-      'https://us-central1-o7tools.cloudfunctions.net/fun7-ad-partner';
     const params = { countryCode };
     const username = 'fun7user';
     const password = 'fun7pass';
 
     const { data } = await firstValueFrom(
       this.httpService
-        .get<AdsPermission>(url, {
+        .get<AdsPermission>(this.adPermissionUrl, {
           params,
           auth: {
             username,
@@ -58,12 +65,16 @@ export class EventsManagerService {
         .pipe(
           catchError((error: AxiosError) => {
             this.logger.error(error.response.data);
-            throw 'An error happened!';
+            throw generalError;
           }),
         ),
     );
 
-    return data;
+    if (data && data.ads) {
+      return data;
+    } else {
+      throw generalError;
+    }
   }
 
   async getAvailableEventTypes(ip: string) {
