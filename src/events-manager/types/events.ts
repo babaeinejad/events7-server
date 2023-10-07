@@ -12,6 +12,7 @@ export enum Evnet7Types {
 }
 
 export interface Events7 {
+  id?: number;
   priority: number;
   name: string;
   description: string;
