@@ -19,7 +19,7 @@ import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
-import { ONE_DAY, generalError } from 'src/events-manager/const';
+import { ONE_DAY, PAGE_SIZE, generalError } from 'src/events-manager/const';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 
@@ -115,7 +115,7 @@ export class EventsManagerService {
 
   async getEvents(id?: number) {
     const events = await this.prismaService.events7.findMany({
-      take: 200,
+      take: PAGE_SIZE,
       skip: 1,
       ...(id && {
         cursor: {

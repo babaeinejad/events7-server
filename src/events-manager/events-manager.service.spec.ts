@@ -13,6 +13,7 @@ import { of } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
 import { AxiosResponse } from 'axios';
 import { generalError } from './const';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 describe('EventsManagerService', () => {
   let service: EventsManagerService;
@@ -64,6 +65,13 @@ describe('EventsManagerService', () => {
           provide: ConfigService,
           useValue: {
             get: jest.fn(() => of('')),
+          },
+        },
+        {
+          provide: CACHE_MANAGER,
+          useValue: {
+            get: jest.fn(() => of('')),
+            set: jest.fn(() => of('')),
           },
         },
       ],

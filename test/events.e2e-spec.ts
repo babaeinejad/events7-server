@@ -26,9 +26,9 @@ describe('EventsManagerController (e2e)', () => {
     await app.init();
   });
 
-  it('/GET events', () => {
+  it('/GET events/cursored/:id', () => {
     return request(app.getHttpServer())
-      .get('/events')
+      .get('/events/cursored/0')
       .expect(200)
       .expect(['event1']);
   });
