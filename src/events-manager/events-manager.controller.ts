@@ -15,9 +15,9 @@ import { RealIP } from 'nestjs-real-ip';
 @Controller('events')
 export class EventsManagerController {
   constructor(private readonly eventsManagerService: EventsManagerService) {}
-  @Get('/')
-  async getEvents() {
-    return this.eventsManagerService.getEvents();
+  @Get('/cursored/:id')
+  async getEvents(@Param('id', ParseIntPipe) id?: number) {
+    return this.eventsManagerService.getEvents(id);
   }
 
   @Get('/available-event-types')
