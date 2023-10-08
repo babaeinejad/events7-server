@@ -1,6 +1,7 @@
 import {
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
@@ -18,7 +19,9 @@ import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
-import { generalError } from './const';
+import { ONE_DAY, generalError } from 'src/events-manager/const';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class EventsManagerService {
@@ -30,9 +33,16 @@ export class EventsManagerService {
     private readonly prismaService: PrismaService,
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   async getCountryCode(ip: string): Promise<IpAPI> {
+    const cachedCountry = await this.cacheManager.get<IpAPI>(
+      `getCountryCode-${ip}`,
+    );
+    if (cachedCountry.countryCode) {
+      return cachedCountry;
+    }
     const { data } = await firstValueFrom(
       this.httpService.get<IpAPI>(this.baseIpApiUrl + ip).pipe(
         catchError((error: AxiosError) => {
@@ -42,6 +52,7 @@ export class EventsManagerService {
       ),
     );
     if (data && data.countryCode) {
+      await this.cacheManager.set(`getCountryCode-${ip}`, data, 0);
       return data;
     } else {
       throw generalError;
@@ -49,6 +60,12 @@ export class EventsManagerService {
   }
 
   async checkAdsPermision(countryCode: string): Promise<AdsPermission> {
+    const cachedData = await this.cacheManager.get<AdsPermission>(
+      `checkAdsPermision-${countryCode}`,
+    );
+    if (cachedData?.ads) {
+      return cachedData;
+    }
     const params = { countryCode };
     const username = 'fun7user';
     const password = 'fun7pass';
@@ -71,6 +88,11 @@ export class EventsManagerService {
     );
 
     if (data && data.ads) {
+      await this.cacheManager.set(
+        `checkAdsPermision-${countryCode}`,
+        data,
+        ONE_DAY,
+      );
       return data;
     } else {
       throw generalError;
