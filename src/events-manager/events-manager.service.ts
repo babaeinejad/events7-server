@@ -1,6 +1,7 @@
 import {
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
@@ -17,38 +18,61 @@ import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ConfigService } from '@nestjs/config';
+import { ONE_DAY, generalError } from 'src/events-manager/const';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class EventsManagerService {
   private readonly logger = new Logger(EventsManagerService.name);
+  baseIpApiUrl = this.configService.get<string>('IP_API_BASE_URL');
+  adPermissionUrl = this.configService.get<string>('AD_PERMISSION_URL');
 
   constructor(
     private readonly prismaService: PrismaService,
     private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   async getCountryCode(ip: string): Promise<IpAPI> {
+    const cachedCountry = await this.cacheManager.get<IpAPI>(
+      `getCountryCode-${ip}`,
+    );
+    if (cachedCountry.countryCode) {
+      return cachedCountry;
+    }
     const { data } = await firstValueFrom(
-      this.httpService.get<IpAPI>(`http://ip-api.com/json/${ip}`).pipe(
+      this.httpService.get<IpAPI>(this.baseIpApiUrl + ip).pipe(
         catchError((error: AxiosError) => {
           this.logger.error(error.response.data);
-          throw 'An error happened!';
+          throw generalError;
         }),
       ),
     );
-    return data;
+    if (data && data.countryCode) {
+      await this.cacheManager.set(`getCountryCode-${ip}`, data, 0);
+      return data;
+    } else {
+      throw generalError;
+    }
   }
 
   async checkAdsPermision(countryCode: string): Promise<AdsPermission> {
-    const url =
-      'https://us-central1-o7tools.cloudfunctions.net/fun7-ad-partner';
+    const cachedData = await this.cacheManager.get<AdsPermission>(
+      `checkAdsPermision-${countryCode}`,
+    );
+    if (cachedData?.ads) {
+      return cachedData;
+    }
     const params = { countryCode };
     const username = 'fun7user';
     const password = 'fun7pass';
 
     const { data } = await firstValueFrom(
       this.httpService
-        .get<AdsPermission>(url, {
+        .get<AdsPermission>(this.adPermissionUrl, {
           params,
           auth: {
             username,
@@ -58,12 +82,21 @@ export class EventsManagerService {
         .pipe(
           catchError((error: AxiosError) => {
             this.logger.error(error.response.data);
-            throw 'An error happened!';
+            throw generalError;
           }),
         ),
     );
 
-    return data;
+    if (data && data.ads) {
+      await this.cacheManager.set(
+        `checkAdsPermision-${countryCode}`,
+        data,
+        ONE_DAY,
+      );
+      return data;
+    } else {
+      throw generalError;
+    }
   }
 
   async getAvailableEventTypes(ip: string) {
