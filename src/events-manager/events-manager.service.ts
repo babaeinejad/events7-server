@@ -40,7 +40,7 @@ export class EventsManagerService {
     const cachedCountry = await this.cacheManager.get<IpAPI>(
       `getCountryCode-${ip}`,
     );
-    if (cachedCountry.countryCode) {
+    if (cachedCountry?.countryCode) {
       return cachedCountry;
     }
     const { data } = await firstValueFrom(
@@ -51,7 +51,7 @@ export class EventsManagerService {
         }),
       ),
     );
-    if (data && data.countryCode) {
+    if (data && data?.countryCode) {
       await this.cacheManager.set(`getCountryCode-${ip}`, data, 0);
       return data;
     } else {
