@@ -115,7 +115,7 @@ export class EventsManagerService {
 
   async getEvents(id?: number) {
     const events = await this.prismaService.events7.findMany({
-      take: PAGE_SIZE,
+      take: PAGE_SIZE + 1,
       skip: 1,
       ...(id && {
         cursor: {
@@ -126,7 +126,10 @@ export class EventsManagerService {
         id: 'asc',
       },
     });
-    return events;
+    return {
+      events: events.slice(0, PAGE_SIZE),
+      nextPageAvailable: events.length > PAGE_SIZE,
+    };
   }
 
   async getEvent(id: number) {
