@@ -146,7 +146,8 @@ export class EventsManagerService {
 
   async validateEvent(event: Events7, ip: string) {
     if (ExtendedEvnet7Types[event.type] === ExtendedEvnet7Types.ADS) {
-      const adsPermission = await this.checkAdsPermision(ip);
+      const { countryCode } = await this.getCountryCode(ip);
+      const adsPermission = await this.checkAdsPermision(countryCode);
       if (
         AdsPermissionEnum[adsPermission.ads] ===
         AdsPermissionEnum['you shall not pass!']
